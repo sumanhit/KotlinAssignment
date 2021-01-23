@@ -4,7 +4,7 @@ import java.util.logging.Logger
 import com.sun.org.slf4j.internal.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
-import com.amex.orderservice.OrderServiceProperties
+import com.amex.orderservice.config.OrderServiceConfig
 
 /**
 Class FruitPriceCalculator implements FruitPriceCalculator interface
@@ -15,7 +15,7 @@ APPLE price is 60 cents and ORANGE price is 25 cents
 class FruitPriceCalculatorServiceImpl : FruitPriceCalculatorService {
 
 	@Autowired
-	lateinit var orderServiceProp : OrderServiceProperties
+	lateinit var orderServiceProp : OrderServiceConfig
 	
 	@Override
 	override fun calculatePrice(fruitsListStr: String): String {

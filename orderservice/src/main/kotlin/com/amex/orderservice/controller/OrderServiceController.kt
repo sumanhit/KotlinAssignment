@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.beans.factory.annotation.Autowired
 import com.amex.orderservice.service.FruitPriceCalculatorService
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.web.bind.annotation.RequestParam
+import org.apache.kafka.clients.admin.NewTopic
 
 /*
  Rest Controller class which exposes
@@ -23,23 +26,23 @@ class OrderServiceController {
 	@Autowired
 	@Qualifier("fruitOfferService")
 	lateinit private var fruitPriceOfferCalcService: FruitPriceCalculatorService
-
+	
 	/* Rest Endpoint for order received with name of fruits to calculate normal price
- 	   @Example URL - "/order/Apple,Apple,Orange,Apple"
+ 	   @Example URL - "/order?fruits=Apple,Apple,Orange,Apple"
  	   @Example Output - "2.05$"
  	*/
-	@GetMapping("/order/{fruits}")
-	fun getFruitPrice(@PathVariable("fruits") fruits: String): String {
+	@GetMapping("/order")
+	fun getFruitPrice(@RequestParam fruits: String): String {
 
 		return fruitPriceCalcService.calculatePrice(fruits);
 	}
 
 	/* Rest Endpoint for order received with name of fruits to calculate offer price
- 	   @Example URL - "/offer/order/Apple, Apple, Orange, Orange, Orange"
+ 	   @Example URL - "/offer/order?fruits=Apple, Apple, Orange, Orange, Orange"
  	   @Example Output - "1.1$"
  	*/
-	@GetMapping("/offer/order/{fruits}")
-	fun getFruitOfferPrice(@PathVariable("fruits") fruits: String): String {
+	@GetMapping("/offer/order")
+	fun getFruitOfferPrice(@RequestParam fruits: String): String {
 
 		return fruitPriceOfferCalcService.calculatePrice(fruits);
 	}

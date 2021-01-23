@@ -22,7 +22,7 @@ class OrderServiceControllerTest {
 	fun testOrderService1() {
 		
 		val fruitsList : String = "Apple, Apple, Orange, Apple"
-		val result = restTemplate.getForEntity("/order/" + fruitsList, String::class.java)
+		val result = restTemplate.getForEntity("/order?fruits=" + fruitsList, String::class.java)
 		assertNotNull(result)
         assertEquals(result.statusCode, HttpStatus.OK)
         assertEquals(result.body, "2.05$")
@@ -32,16 +32,17 @@ class OrderServiceControllerTest {
 	fun testOrderService2() {
 		
 		val fruitsList : String = ""
-		val result = restTemplate.getForEntity("/order/" + fruitsList, String::class.java)
+		val result = restTemplate.getForEntity("/order?fruits=" + fruitsList, String::class.java)
 		assertNotNull(result)
-        assertEquals(result.statusCode, HttpStatus.NOT_FOUND)
+        assertEquals(result.statusCode, HttpStatus.OK)
+		assertEquals(result.body, "0.0$")
 	}
 	
 	@Test
 	fun testOrderService3() {
 		
 		val fruitsList : String = "APPLE, APPLE, ORANGE, APPLE"
-		val result = restTemplate.getForEntity("/order/" + fruitsList, String::class.java)
+		val result = restTemplate.getForEntity("/order?fruits=" + fruitsList, String::class.java)
 		assertNotNull(result)
         assertEquals(result.statusCode, HttpStatus.OK)
         assertEquals(result.body, "2.05$")
@@ -51,7 +52,7 @@ class OrderServiceControllerTest {
 	fun testOrderService4() {
 		
 		val fruitsList : String = "ApPLe, APPLE, ORanGE, APPLE"
-		val result = restTemplate.getForEntity("/order/" + fruitsList, String::class.java)
+		val result = restTemplate.getForEntity("/order?fruits=" + fruitsList, String::class.java)
 		assertNotNull(result)
         assertEquals(result.statusCode, HttpStatus.OK)
         assertEquals(result.body, "2.05$")
@@ -61,7 +62,7 @@ class OrderServiceControllerTest {
 	fun testOrderService5() {
 		
 		val fruitsList : String = "Mango, Banana"
-		val result = restTemplate.getForEntity("/order/" + fruitsList, String::class.java)
+		val result = restTemplate.getForEntity("/order?fruits=" + fruitsList, String::class.java)
 		assertNotNull(result)
         assertEquals(result.statusCode, HttpStatus.OK)
         assertEquals(result.body, "0.0$")
@@ -71,7 +72,7 @@ class OrderServiceControllerTest {
 	fun testOrderService6() {
 		
 		val fruitsList : String = "Apple, Apple"
-		val result = restTemplate.getForEntity("/order/" + fruitsList, String::class.java)
+		val result = restTemplate.getForEntity("/order?fruits=" + fruitsList, String::class.java)
 		assertNotNull(result)
         assertEquals(result.statusCode, HttpStatus.OK)
         assertEquals(result.body, "1.2$")
@@ -81,7 +82,7 @@ class OrderServiceControllerTest {
 	fun testOrderService7() {
 		
 		val fruitsList : String = "Orange, Orange, Orange"
-		val result = restTemplate.getForEntity("/order/" + fruitsList, String::class.java)
+		val result = restTemplate.getForEntity("/order?fruits=" + fruitsList, String::class.java)
 		assertNotNull(result)
         assertEquals(result.statusCode, HttpStatus.OK)
         assertEquals(result.body, "0.75$")

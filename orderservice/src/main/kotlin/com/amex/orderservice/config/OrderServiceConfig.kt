@@ -1,4 +1,4 @@
-package com.amex.orderservice
+package com.amex.orderservice.config
 
 import org.springframework.stereotype.Component
 import org.springframework.beans.factory.annotation.Value
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value
  and fetches the values from application.propertie
  */
 @Component
-class OrderServiceProperties {
+class OrderServiceConfig {
 	
 	@Value("\${fruit.apple.name}")
 	lateinit var appleName : String
