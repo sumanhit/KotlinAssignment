@@ -9,41 +9,76 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.web.bind.annotation.RequestParam
 import org.apache.kafka.clients.admin.NewTopic
+import com.amex.orderservice.exception.OutOfStockException
+import com.amex.orderservice.config.OrderServiceConfig
+import com.amex.orderservice.util.OrderServiceUtils
 
 /*
  Rest Controller class which exposes
  APIs to service the requests and responses back to the caller
+ The controller also posts messages to Kafka topic to update the order status
  */
 @RestController
 class OrderServiceController {
 
-	//Injected FruitService with regular price
+	//KafkaTemplate dependency injected
 	@Autowired
-	@Qualifier("fruitService")
-	lateinit private var fruitPriceCalcService: FruitPriceCalculatorService
+	lateinit private var kafkaTemplate: KafkaTemplate<String, String>
 
-	//Injected FruitService with Offer price
+	//OrderServiceRequestHandler dependency injected 
 	@Autowired
-	@Qualifier("fruitOfferService")
-	lateinit private var fruitPriceOfferCalcService: FruitPriceCalculatorService
+	lateinit private var orderRequestHandler: OrderServiceRequestHandler
 	
+	//OrderServiceConfig dependency injected 
+	@Autowired
+	lateinit var orderServiceProp : OrderServiceConfig
+
 	/* Rest Endpoint for order received with name of fruits to calculate normal price
+ 	   and post order update to Kafka
  	   @Example URL - "/order?fruits=Apple,Apple,Orange,Apple"
  	   @Example Output - "2.05$"
- 	*/
+	 */
 	@GetMapping("/order")
 	fun getFruitPrice(@RequestParam fruits: String): String {
+		var totalPrice: String = "0.0$"
+		try {
+			totalPrice = orderRequestHandler.handleOrder(fruits, false)
+			val deliveryDays = OrderServiceUtils.estimateDeliveryDays(totalPrice)
+			kafkaTemplate.send(
+				orderServiceProp.orderTopicName,
+				"Order is placed successfully for [" + fruits + "]. Total Price: " + totalPrice + ". Estimated Delivery time : " + deliveryDays + " days." 
+			)
+		} catch (e: OutOfStockException) {
+			kafkaTemplate.send(
+				orderServiceProp.orderTopicName,
+				e.message
+			)
+		}
 
-		return fruitPriceCalcService.calculatePrice(fruits);
+		return totalPrice
 	}
 
 	/* Rest Endpoint for order received with name of fruits to calculate offer price
+ 	   and post order update to Kafka
  	   @Example URL - "/offer/order?fruits=Apple, Apple, Orange, Orange, Orange"
  	   @Example Output - "1.1$"
- 	*/
+	 */
 	@GetMapping("/offer/order")
 	fun getFruitOfferPrice(@RequestParam fruits: String): String {
-
-		return fruitPriceOfferCalcService.calculatePrice(fruits);
+		var totalPrice: String = "0.0$"
+		try {
+			totalPrice = orderRequestHandler.handleOrder(fruits, true)
+			val deliveryDays = OrderServiceUtils.estimateDeliveryDays(totalPrice)
+			kafkaTemplate.send(
+				orderServiceProp.orderTopicName,
+				"Order is placed successfully with offer for [" + fruits + "]. Total Offer Price: " + totalPrice + ". Estimated Delivery time : " + deliveryDays + " days."
+			)
+		} catch (e: OutOfStockException) {
+			kafkaTemplate.send(
+				orderServiceProp.orderTopicName,
+				e.message
+			)
+		}
+		return totalPrice
 	}
 }

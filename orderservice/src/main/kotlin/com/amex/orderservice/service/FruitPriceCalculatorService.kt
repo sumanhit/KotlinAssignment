@@ -8,8 +8,8 @@ interface FruitPriceCalculatorService {
 	
 	/**
 	 This method calculates the price of fruits
-	 @Input - List of Fruits Name
+	 @Input - No. Of Apples and No. of Oranges
 	 @Output - Price of fruits in dollar
 	*/
-	fun calculatePrice(fruitsListStr: String): String
+	fun calculatePrice(noOfApples: Int, noOfOranges: Int): String
 }

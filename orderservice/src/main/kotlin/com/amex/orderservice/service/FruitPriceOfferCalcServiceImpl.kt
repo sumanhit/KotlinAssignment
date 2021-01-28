@@ -13,40 +13,24 @@ APPLE price is 60 cents and ORANGE price is 25 cents
 class FruitPriceOfferCalcServiceImpl : FruitPriceCalculatorService {
 
 	@Autowired
-	lateinit var orderServiceProp : OrderServiceConfig
-	
+	lateinit var orderServiceProp: OrderServiceConfig
+
+	/*
+ 	Calculates the total price in cents and return dollar value
+ 	APPLE price - 60 cents and ORANGE price - 25 cents
+ 	APPLE OFFER - BUY 1 & GET 1
+ 	ORANGE OFFER - BUY 3 at price of 2
+ 	*/
 	@Override
-	override fun calculatePrice(fruitsListStr: String): String {
-
-		// Split the console input using comma, trim and converts to upper case 
-		val fruitsList: List<String> =
-			fruitsListStr.split(orderServiceProp.fruitSeperator)
-				.map { str -> str.trim() }
-				.map { str -> str.toUpperCase() }
-
-		var noOfApples: Int = 0
-		
-		var noOfOranges: Int =0
+	override fun calculatePrice(noOfApples: Int, noOfOranges: Int): String {
 		
 		//Cost of fruits in dollar
 		var costInDollar: Double
-		//Looping through the list of fruits
-		for (fruit in fruitsList) {
-			//Check if apple or orange
-			if (fruit.equals(orderServiceProp.appleName)) {
-				noOfApples++
-				
-			} else if (fruit.equals(orderServiceProp.orangeName)) {
-				noOfOranges++
-				
-			} else {
-				// Log Warning message
-			}
-		}
+
 		//Cost of fruits in cent
-		var costInCent = ((noOfApples/2) + (noOfApples%2))*Integer.valueOf(orderServiceProp.applePrice)
-		
-		costInCent += (((noOfOranges/3)*2) + (noOfOranges%3))*Integer.valueOf(orderServiceProp.orangePrice)
+		var costInCent = ((noOfApples / 2) + (noOfApples % 2)) * Integer.valueOf(orderServiceProp.applePrice)
+
+		costInCent += (((noOfOranges / 3) * 2) + (noOfOranges % 3)) * Integer.valueOf(orderServiceProp.orangePrice)
 		//Calculate dollar output
 		costInDollar = costInCent / (orderServiceProp.dollarDivisor).toDouble()
 

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 
 /*
  Holds all the properties required for Order Service
- and fetches the values from application.propertie
+ and fetches the values from application.properties file 
  */
 @Component
 class OrderServiceConfig {
@@ -29,6 +29,9 @@ class OrderServiceConfig {
 	lateinit var fruitSeperator : String
 	
 	@Value("\${dollar.conversion.divisor}")
-	lateinit var dollarDivisor : String 
+	lateinit var dollarDivisor : String
+	
+	@Value("\${order.status.kafka.topic.name}")
+	lateinit var orderTopicName : String
 	
 }
