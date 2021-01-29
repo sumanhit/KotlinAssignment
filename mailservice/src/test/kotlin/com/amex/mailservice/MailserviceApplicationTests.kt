@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @EmbeddedKafka
-class SpringKafkaKotlinApplicationTests {
+class MailserviceApplicationTests {
 
 	@Test
 	fun contextLoads() {

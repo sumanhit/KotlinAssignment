@@ -11,8 +11,8 @@ import org.springframework.kafka.annotation.EnableKafka
  */
 @SpringBootApplication
 @EnableKafka
-class SpringKafkaKotlinApplication
+class MailserviceApplication
 
 fun main(args: Array<String>) {
-	runApplication<SpringKafkaKotlinApplication>(*args)
+	runApplication<MailserviceApplication>(*args)
 }
