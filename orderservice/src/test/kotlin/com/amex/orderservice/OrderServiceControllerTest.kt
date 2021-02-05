@@ -7,12 +7,14 @@ import kotlin.test.assertNotNull
 import org.springframework.http.HttpStatus
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import org.springframework.test.context.TestPropertySource
 
 /*
  Spring boot test for Order Service Controller
  Tests the normal pricing of fruits with various combination
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties=["offer.enabled=false"])
 class OrderServiceControllerTest {
 	
 	@Autowired

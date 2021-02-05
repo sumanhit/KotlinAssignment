@@ -34,4 +34,7 @@ class OrderServiceConfig {
 	@Value("\${order.status.kafka.topic.name}")
 	lateinit var orderTopicName : String
 	
+	@Value("\${offer.enabled}")
+	lateinit var offerEnabled : String
+	
 }

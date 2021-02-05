@@ -33,21 +33,34 @@ class OrderServiceController {
 	@Autowired
 	lateinit var orderServiceProp : OrderServiceConfig
 
-	/* Rest Endpoint for order received with name of fruits to calculate normal price
- 	   and post order update to Kafka
+	/* Rest Endpoint for order received with name of fruits to calculate normal or offer price based on configuration
+ 	   and post order update to Kafka.
+ 	   @Condition - offer.enabled=false
  	   @Example URL - "/order?fruits=Apple,Apple,Orange,Apple"
  	   @Example Output - "2.05$"
+ 	   @Condition - offer.enabled=true
+ 	   @Example URL - "/offer/order?fruits=Apple, Apple, Orange, Orange, Orange"
+ 	   @Example Output - "1.1$"
 	 */
 	@GetMapping("/order")
 	fun getFruitPrice(@RequestParam fruits: String): String {
 		var totalPrice: String = "0.0$"
+		val offerEnabled: Boolean = (orderServiceProp.offerEnabled)?.toBoolean() ?: false
 		try {
-			totalPrice = orderRequestHandler.handleOrder(fruits, false)
+			totalPrice = orderRequestHandler.handleOrder(fruits, offerEnabled)
 			val deliveryDays = OrderServiceUtils.estimateDeliveryDays(totalPrice)
-			kafkaTemplate.send(
-				orderServiceProp.orderTopicName,
-				"Order is placed successfully for [" + fruits + "]. Total Price: " + totalPrice + ". Estimated Delivery time : " + deliveryDays + " days." 
-			)
+			if (offerEnabled) {
+				kafkaTemplate.send(
+					orderServiceProp.orderTopicName,
+					"Order is placed successfully with offer for [" + fruits + "]. Total Offer Price: " + totalPrice + ". Estimated Delivery time : " + deliveryDays + " days."
+				)
+			} else {
+				kafkaTemplate.send(
+					orderServiceProp.orderTopicName,
+					"Order is placed successfully for [" + fruits + "]. Total Price: " + totalPrice + ". Estimated Delivery time : " + deliveryDays + " days."
+				)
+			}
+			
 		} catch (e: OutOfStockException) {
 			kafkaTemplate.send(
 				orderServiceProp.orderTopicName,
@@ -58,27 +71,4 @@ class OrderServiceController {
 		return totalPrice
 	}
 
-	/* Rest Endpoint for order received with name of fruits to calculate offer price
- 	   and post order update to Kafka
- 	   @Example URL - "/offer/order?fruits=Apple, Apple, Orange, Orange, Orange"
- 	   @Example Output - "1.1$"
-	 */
-	@GetMapping("/offer/order")
-	fun getFruitOfferPrice(@RequestParam fruits: String): String {
-		var totalPrice: String = "0.0$"
-		try {
-			totalPrice = orderRequestHandler.handleOrder(fruits, true)
-			val deliveryDays = OrderServiceUtils.estimateDeliveryDays(totalPrice)
-			kafkaTemplate.send(
-				orderServiceProp.orderTopicName,
-				"Order is placed successfully with offer for [" + fruits + "]. Total Offer Price: " + totalPrice + ". Estimated Delivery time : " + deliveryDays + " days."
-			)
-		} catch (e: OutOfStockException) {
-			kafkaTemplate.send(
-				orderServiceProp.orderTopicName,
-				e.message
-			)
-		}
-		return totalPrice
-	}
 }
